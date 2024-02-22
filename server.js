@@ -99,6 +99,10 @@ app.get("/orders", getOrders)
 app.post("/orders", postOrder)
 app.use('/images/:filename', getImage)
 
-app.listen(3000, () => {
-    console.log(`Server is listening on http://${"localhost"}:${3000}`);
+
+const port = process.env.PORT || 3000;
+const host = os.hostname();
+
+app.listen(port, () => {
+    console.log(`Server is listening on http://${host}:${port}`);
 })
