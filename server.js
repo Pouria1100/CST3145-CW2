@@ -1,6 +1,6 @@
 const express = require('express');// Importing the Express framework to create and manage the server
 const os = require('os');// Importing the OS module to interact with underlying operating system functionalities
-const { MongoClient } = require('mongodb');// Destructuring MongoClient from the mongodb package to connect to MongoDB
+const { MongoClient, ObjectId } = require('mongodb');// Destructuring MongoClient from the mongodb package to connect to MongoDB
 const bodyParser = require('body-parser');// Importing body-parser middleware to parse incoming request bodies before handlers
 const fs = require('fs');// Importing the File System module to interact with the file system
 const path = require('path');// Importing the Path module for working with file and directory paths
@@ -108,6 +108,42 @@ const postOrder = async (req, res) => {
     }
 }
 
+
+const putLessonSpace = async (req, res) => {
+    try {
+        await client.connect();
+
+        const database = client.db("afterschool");
+        const lesson_collection = database.collection("lessons");
+
+        const lessonId = req.params.id;
+        const { spaces } = req.body;
+
+   
+        // Validate if 'spaces' is a valid number
+        if (isNaN(spaces) || spaces < 0) {
+            return res.status(400).json({ error: 'Invalid spaces value' });
+        }
+
+        const result = await lesson_collection.updateOne(
+            { _id: new ObjectId(lessonId) },
+            { $set: { spaces: spaces } }
+        );
+
+        if (result.matchedCount === 0) {
+            res.status(404).json({ error: 'Lesson not found' });
+        } else {
+            res.json({ message: 'Lesson spaces updated successfully' });
+        }
+
+    } catch (err) {
+        console.error('Error updating lesson spaces:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+}
+
+
 // Applying CORS middleware to allow all cross-origin requests
 app.use(cors({ origin: '*' }));
 
@@ -128,6 +164,8 @@ app.post("/orders", postOrder)
 
 // Serving static images with dynamic filenames from a directory
 app.use('/images/:filename', getImage)
+
+app.put('/lessons/:id', putLessonSpace)
 
 
 
