@@ -7,7 +7,9 @@ const cors = require('cors');
 
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
+const HOST= os.hostname();
 
 const url = 'mongodb+srv://pouriasabouri6771:Pou1441375@cluster0.6qzp3jb.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
@@ -100,9 +102,9 @@ app.post("/orders", postOrder)
 app.use('/images/:filename', getImage)
 
 
-const port = process.env.PORT || 3000;
-const host = os.hostname();
 
-app.listen(port, () => {
-    console.log(`Server is listening on http://${host}:${port}`);
+
+
+app.listen(PORT, () => {
+    console.log(`Server is listening on http://${HOST}:${PORT}`);
 })
